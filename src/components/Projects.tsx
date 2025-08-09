@@ -12,7 +12,7 @@ const Projects = () => {
       technologies: ["Arduino", "IoT", "C++", "Sensors", "Hardware"],
       color: "cosmic",
       category: "IoT Project",
-      projectUrl: "https://github.com/YUVARAJ-2K3/fire-safety-system" 
+      projectUrl: "https://drive.google.com/file/d/18L1Z8bEyy_nmqEvI97QG-8CXLYCrJc42/view?usp=sharing" 
     },
     {
       title: "Ultrasound Nerve Segmentation using AI/ML",
@@ -20,7 +20,7 @@ const Projects = () => {
       technologies: ["TensorFlow", "Python", "Deep Learning", "Medical Imaging", "AI/ML"],
       color: "stellar",
       category: "AI/ML Project",
-      projectUrl: "https://github.com/YUVARAJ-2K3/ultrasound-nerve-segmentation" 
+      projectUrl: "https://drive.google.com/file/d/1RhJ1KR-6t5DzyzG1Cyuin8PsZ-EnwZW-/view?usp=sharing"
     },
     {
       title: "Node Monitoring Visualization",
@@ -28,7 +28,7 @@ const Projects = () => {
       technologies: ["Prometheus", "Grafana", "Monitoring", "DevOps", "Alerting"],
       color: "nebula",
       category: "DevOps Project",
-      projectUrl: "https://github.com/YUVARAJ-2K3/node-monitoring" 
+      projectUrl: "https://www.linkedin.com/posts/yuvaraj-s-542053256_monitoring-devops-prometheus-activity-7293908845448335360-ol47?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD8CzEIBE8Z8pNSWOJohRYteTW4hAVHJEE0" 
     },
     {
       title: "CI/CD Pipeline with Jenkins, Docker & AWS",
@@ -36,7 +36,23 @@ const Projects = () => {
       technologies: ["Jenkins", "Docker", "AWS", "SonarQube", "GitHub", "EC2"],
       color: "galaxy",
       category: "DevOps Project",
-      projectUrl: "https://github.com/YUVARAJ-2K3/cicd-pipeline" 
+      projectUrl: "https://www.linkedin.com/posts/yuvaraj-s-542053256_devops-ciabrcd-cloudcomputing-activity-7306359990078816256--_mN?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD8CzEIBE8Z8pNSWOJohRYteTW4hAVHJEE0"
+    },
+    {
+      title: "ELK Stack logging & Visualization in RHEL 9",
+      description: "Implemented comprehensive logging and visualization solution using Elasticsearch, Logstash, and Kibana (ELK Stack) on Red Hat Enterprise Linux 9. Created centralized log management system for monitoring, analyzing, and visualizing system logs and application data in real-time.",
+      technologies: ["ELK Stack", "Elasticsearch", "Logstash", "Kibana", "RHEL 9", "Linux Monitoring"],
+      color: "space-orange",
+      category: "DevOps Project",
+      projectUrl: "https://www.linkedin.com/posts/yuvaraj-s-542053256_elkstack-rhel-linuxmonitoring-activity-7297294677714554880-5RSH?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD8CzEIBE8Z8pNSWOJohRYteTW4hAVHJEE0"
+    },
+    {
+      title: "NGINX Load Balancer with Custom Website on AWS",
+      description: "Successfully deployed a multi-tier web architecture on AWS, using NGINX configured on a RHEL EC2 instance as a load balancer to distribute traffic across three Ubuntu web servers hosting a custom website. Configured reverse proxy with round-robin load balancing and optimized traffic flow using AWS Security Groups and VPC setup.",
+      technologies: ["AWS EC2", "RHEL 9", "Ubuntu 24.04", "NGINX", "HTML/CSS", "Linux", "VPC"],
+      color: "stellar",
+      category: "Cloud Architecture",
+      projectUrl: "https://www.linkedin.com/posts/yuvaraj-s-542053256_nginx-load-balancer-with-custom-website-activity-7341792381844787200-S0W4?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD8CzEIBE8Z8pNSWOJohRYteTW4hAVHJEE0"
     }
   ];
 
@@ -156,6 +172,25 @@ const Projects = () => {
               </Card>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* Load More Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center mt-12"
+        >
+          <Button
+            variant="outline"
+            size="lg"
+            className="nebula-border text-nebula hover:bg-nebula hover:text-nebula-foreground glow-nebula"
+            onClick={() => window.open('https://github.com/YUVARAJ-2K3?tab=repositories', '_blank')}
+          >
+            <ExternalLink className="h-5 w-5 mr-2" />
+            Load More Projects
+          </Button>
         </motion.div>
 
         {/* Call to Action */}
