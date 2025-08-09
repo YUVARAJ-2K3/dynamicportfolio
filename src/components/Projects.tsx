@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 const Projects = () => {
   const projects = [
@@ -11,28 +11,32 @@ const Projects = () => {
       description: "Developed an Automatic fire detection and suppression model using Arduino UNO, sensors like smoke, sound and temperature. Suppressed fire using 1HP water pump.",
       technologies: ["Arduino", "IoT", "C++", "Sensors", "Hardware"],
       color: "cosmic",
-      category: "IoT Project"
+      category: "IoT Project",
+      projectUrl: "https://github.com/YUVARAJ-2K3/fire-safety-system" 
     },
     {
       title: "Ultrasound Nerve Segmentation using AI/ML",
       description: "Developed a deep learning model using TensorFlow framework to automatically segment nerve structures in ultrasound images, improving accuracy and consistency in medical image analysis.",
       technologies: ["TensorFlow", "Python", "Deep Learning", "Medical Imaging", "AI/ML"],
       color: "stellar",
-      category: "AI/ML Project"
+      category: "AI/ML Project",
+      projectUrl: "https://github.com/YUVARAJ-2K3/ultrasound-nerve-segmentation" 
     },
     {
       title: "Node Monitoring Visualization",
       description: "Deployed Prometheus as the primary tool for comprehensive node monitoring, combined with Grafana dashboards to deliver actionable data visualizations. Configured alerts for node usage exceeding limits via email and Slack.",
       technologies: ["Prometheus", "Grafana", "Monitoring", "DevOps", "Alerting"],
       color: "nebula",
-      category: "DevOps Project"
+      category: "DevOps Project",
+      projectUrl: "https://github.com/YUVARAJ-2K3/node-monitoring" 
     },
     {
       title: "CI/CD Pipeline with Jenkins, Docker & AWS",
       description: "Built an automated CI/CD pipeline using GitHub, Jenkins, SonarQube, and Docker. Deployed a web application on AWS EC2 instances with real-time code integration, containerization, and static code analysis for enhanced quality, scalability, and reliability.",
       technologies: ["Jenkins", "Docker", "AWS", "SonarQube", "GitHub", "EC2"],
       color: "galaxy",
-      category: "DevOps Project"
+      category: "DevOps Project",
+      projectUrl: "https://github.com/YUVARAJ-2K3/cicd-pipeline" 
     }
   ];
 
@@ -94,7 +98,7 @@ const Projects = () => {
               whileHover={{ scale: 1.03 }}
               className="h-full"
             >
-              <Card className="bg-card/50 backdrop-blur-sm stellar-border hover:cosmic-border transition-all duration-300 h-full group">
+              <Card className="bg-card/50 backdrop-blur-sm stellar-border hover:cosmic-border transition-all duration-300 h-full group flex flex-col">
                 <CardHeader>
                   <div className="flex justify-between items-start mb-2">
                     <Badge 
@@ -108,49 +112,44 @@ const Projects = () => {
                     {project.title}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <p className="text-muted-foreground leading-relaxed">
-                    {project.description}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech, techIndex) => (
-                      <motion.div
-                        key={tech}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ 
-                          delay: index * 0.1 + techIndex * 0.05,
-                          duration: 0.3 
-                        }}
-                        viewport={{ once: true }}
-                      >
-                        <Badge 
-                          variant="outline" 
-                          className="text-xs border-border/50 hover:border-cosmic/50 transition-colors duration-300"
+                <CardContent className="flex flex-col h-full">
+                  <div className="flex flex-col flex-grow space-y-6">
+                    <p className="text-muted-foreground leading-relaxed">
+                      {project.description}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {project.technologies.map((tech, techIndex) => (
+                        <motion.div
+                          key={tech}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          transition={{ 
+                            delay: index * 0.1 + techIndex * 0.05,
+                            duration: 0.3 
+                          }}
+                          viewport={{ once: true }}
                         >
-                          {tech}
-                        </Badge>
-                      </motion.div>
-                    ))}
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs border-border/50 hover:border-cosmic/50 transition-colors duration-300"
+                          >
+                            {tech}
+                          </Badge>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="flex space-x-4 pt-4">
+                  <div className="mt-auto pt-6">
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`stellar-border text-stellar hover:bg-stellar hover:text-stellar-foreground flex-1`}
+                      className={`stellar-border text-stellar hover:bg-stellar hover:text-stellar-foreground w-full`}
+                      onClick={() => window.open(project.projectUrl, '_blank')}
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       View Project
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={`cosmic-border text-cosmic hover:bg-cosmic hover:text-cosmic-foreground flex-1`}
-                    >
-                      <Github className="h-4 w-4 mr-2" />
-                      Source Code
                     </Button>
                   </div>
                 </CardContent>
