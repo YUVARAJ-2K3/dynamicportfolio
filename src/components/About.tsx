@@ -5,6 +5,7 @@ import { Code, Server, Palette, Zap } from 'lucide-react';
 const About = () => {
   const highlights = [
     {
+      
       icon: Server,
       title: "DevOps & Cloud",
       description: "Skilled in containerization, CI/CD pipelines, Monitoring and Logging, AWS cloud infrastructure management"
