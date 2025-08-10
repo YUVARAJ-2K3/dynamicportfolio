@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush() 
+    }
+
     environment {
         AWS_ACCOUNT_ID = '577638372377'
         AWS_REGION = 'ap-south-1'
@@ -51,7 +55,7 @@ pipeline {
             steps {
                 sh '''
                     docker rm -f portfolio-container || true
-                    docker run -d --name portfolio-container -p 8080:80 ${ECR_REPO}:${IMAGE_TAG}
+                    docker run -d --name portfolio-container -p 80:80 ${ECR_REPO}:${IMAGE_TAG}
                 '''
             }
         }
