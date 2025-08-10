@@ -2,76 +2,74 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION     = 'ap-south-1'
         AWS_ACCOUNT_ID = '577638372377'
-        ECR_REPO_NAME  = 'portfolio'
-        IMAGE_TAG      = 'latest'
-        CLUSTER_NAME   = 'portfolio-cluster'
-        SERVICE_NAME   = 'Portfolio-service'
+        AWS_REGION     = 'ap-south-1'
+        IMAGE_NAME     = 'portfolio'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/YUVARAJ-2K3/dynamicportfolio.git'
+            }
+        }
+
+        stage('Verify Node & npm Versions') {
+            steps {
+                sh 'node --version || echo "Node.js not installed"'
+                sh 'npm --version || echo "npm not installed"'
             }
         }
 
         stage('Install & Build Portfolio') {
             steps {
-                sh """
-                npm install
-                npm run build
-                """
+                sh 'npm install'
+                sh 'npm run build'
             }
         }
 
         stage('Login to AWS ECR') {
             steps {
-                withAWS(credentials: 'aws-ecr-creds', region: "${AWS_REGION}") {
-                    sh """
-                    aws ecr get-login-password --region ${AWS_REGION} \
-                        | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                    """
-                }
+                sh '''
+                    aws ecr get-login-password --region $AWS_REGION \
+                    | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+                '''
             }
         }
 
         stage('Build & Tag Docker Image') {
             steps {
-                sh """
-                docker build -t ${ECR_REPO_NAME}:${IMAGE_TAG} .
-                docker tag ${ECR_REPO_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
-                """
+                sh '''
+                    docker build -t $IMAGE_NAME .
+                    docker tag $IMAGE_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
+                '''
             }
         }
 
         stage('Push to AWS ECR') {
             steps {
-                sh """
-                docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
-                """
+                sh '''
+                    docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
+                '''
             }
         }
 
         stage('Deploy to ECS Fargate') {
             steps {
-                withAWS(credentials: 'aws-ecr-creds', region: "${AWS_REGION}") {
-                    sh """
+                sh '''
                     aws ecs update-service \
-                        --cluster ${CLUSTER_NAME} \
-                        --service ${SERVICE_NAME} \
+                        --cluster portfolio-cluster \
+                        --service portfolio-service \
                         --force-new-deployment \
-                        --region ${AWS_REGION}
-                    """
-                }
+                        --region $AWS_REGION
+                '''
             }
         }
     }
 
     post {
         success {
-            echo "✅ Portfolio deployed successfully to ECS Fargate!"
+            echo "✅ Deployment succeeded!"
         }
         failure {
             echo "❌ Deployment failed. Check logs."
