@@ -8,11 +8,15 @@ pipeline {
     }
 
     stages {
+
+        
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/YUVARAJ-2K3/dynamicportfolio.git'
             }
         }
+
+
 
         stage('Verify Node & npm Versions') {
             steps {
@@ -23,10 +27,16 @@ pipeline {
 
         stage('Install & Build Portfolio') {
             steps {
-                sh 'npm install'
-                sh 'npm run build'
+                sh '''
+                    rm -rf node_modules package-lock.json
+                    npm cache clean --force
+                    npm install
+                    npm run build
+                '''
             }
-        }
+    }
+}
+
 
         stage('Login to AWS ECR') {
             steps {
