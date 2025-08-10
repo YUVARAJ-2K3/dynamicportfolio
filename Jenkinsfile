@@ -1,48 +1,75 @@
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        AWS_REGION = "ap-south-1"
-        AWS_ACCOUNT_ID = "577638372377"
-        ECR_REPO_NAME = "portfolio"
-        IMAGE_TAG = "latest"
+  environment {
+    REGION = 'ap-south-1'
+    AWS_ACCOUNT = '577638372377'
+    ECR_REPO = "${AWS_ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/my-app"
+    IMAGE_TAG = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
+    EC2_USER = 'ubuntu'
+    EC2_HOST = '52.66.195.236' 
+    SSH_CREDENTIALS_ID = 'ec2'
+    AWS_CREDENTIALS_ID = 'aws-ecr-creds' 
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
 
-    stages {
-        stage('AWS ECR Login') {
-            steps {
-                withAWS(credentials: 'aws-ecr-creds', region: "${AWS_REGION}") {
-                    sh """
-                        aws ecr get-login-password --region ${AWS_REGION} \
-                        | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                    """
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh """
-                    docker build -t ${ECR_REPO_NAME}:${IMAGE_TAG} .
-                    docker tag ${ECR_REPO_NAME}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
-                """
-            }
-        }
-
-        stage('Push to ECR') {
-            steps {
-                sh """
-                    docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
-                """
-            }
-        }
-
-        stage('Run Docker Container') {
-            steps {
-                sh """
-                    docker run -d --name my-running-app -p 8080:80 ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
-                """
-            }
-        }
+    stage('Build') {
+      steps {
+        sh 'docker build -t my-app:latest .'
+      }
     }
+
+    stage('Login to ECR') {
+      steps {
+        withAWS(credentials: "${AWS_CREDENTIALS_ID}", region: "${REGION}") {
+          sh '''
+            aws ecr get-login-password --region $REGION | \
+            docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$REGION.amazonaws.com
+          '''
+        }
+      }
+    }
+
+    stage('Tag & Push') {
+      steps {
+        withAWS(credentials: "${AWS_CREDENTIALS_ID}", region: "${REGION}") {
+          sh '''
+            docker tag my-app:latest ${ECR_REPO}:${IMAGE_TAG}
+            docker push ${ECR_REPO}:${IMAGE_TAG}
+          '''
+        }
+      }
+    }
+
+    stage('Deploy to EC2 via SSH') {
+      steps {
+        sshagent (credentials: ["${SSH_CREDENTIALS_ID}"]) {
+          withAWS(credentials: "${AWS_CREDENTIALS_ID}", region: "${REGION}") {
+            sh """
+              ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
+                aws ecr get-login-password --region ${REGION} | \
+                docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com
+                docker pull ${ECR_REPO}:${IMAGE_TAG} || exit 1
+                docker stop my-app || true
+                docker rm my-app || true
+                docker run -d --name my-app --restart unless-stopped -p 80:80 ${ECR_REPO}:${IMAGE_TAG}
+              '
+            """
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Finished build ${env.BUILD_NUMBER}"
+    }
+  }
 }
