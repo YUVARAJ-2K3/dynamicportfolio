@@ -9,7 +9,7 @@ pipeline {
     EC2_USER = 'ubuntu'       
     EC2_HOST = '<52.66.195.236/>' 
     SSH_CREDENTIALS_ID = 'ec2'
-    AWS_CREDENTIALS_ID = 'aws-creds' 
+    AWS_CREDENTIALS_ID = 'aws-ecr-creds' 
   }
 
   stages {
