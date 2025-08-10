@@ -9,14 +9,12 @@ pipeline {
 
     stages {
 
-        
         stage('Checkout Code') {
             steps {
+                cleanWs() // Cleans workspace before checkout to avoid stale files
                 git branch: 'main', url: 'https://github.com/YUVARAJ-2K3/dynamicportfolio.git'
             }
         }
-
-
 
         stage('Verify Node & npm Versions') {
             steps {
@@ -34,9 +32,7 @@ pipeline {
                     npm run build
                 '''
             }
-    }
-}
-
+        }
 
         stage('Login to AWS ECR') {
             steps {
