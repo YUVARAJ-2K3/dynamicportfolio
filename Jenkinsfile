@@ -3,19 +3,19 @@ pipeline {
     
     environment {
         AWS_REGION = "ap-south-1"
-        AWS_ACCOUNT_ID = "<your_account_id>"
-        ECR_REPO_NAME = "my-app"
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
-        EC2_USER = "ec2-user"
-        EC2_HOST = "<your_ec2_public_ip>"
-        EC2_KEY = "ec2-ssh-key" // Jenkins SSH credential ID
+        AWS_ACCOUNT_ID = "577638372377"
+        ECR_REPO_NAME = "${AWS_ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/my-app"
+        IMAGE_TAG = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
+        EC2_USER = 'ubuntu'  
+        EC2_HOST = '52.66.195.236'
+        EC2_KEY = "ec2" 
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/<your_username>/<your_repo>.git'
+                    url: 'https://github.com/YUVARAJ-2K3/dynamicportfolio.git'
             }
         }
 
