@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:22'   // Node.js 22 with npm preinstalled
+            args '-u root -v /var/run/docker.sock:/var/run/docker.sock' 
+            // Run as root + mount Docker socket to build/push images
+        }
+    }
 
     environment {
         AWS_ACCOUNT_ID = '577638372377'
@@ -8,18 +14,16 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout Code') {
             steps {
-                cleanWs() // Cleans workspace before checkout to avoid stale files
                 git branch: 'main', url: 'https://github.com/YUVARAJ-2K3/dynamicportfolio.git'
             }
         }
 
         stage('Verify Node & npm Versions') {
             steps {
-                sh 'node --version || echo "Node.js not installed"'
-                sh 'npm --version || echo "npm not installed"'
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
 
@@ -28,7 +32,7 @@ pipeline {
                 sh '''
                     rm -rf node_modules package-lock.json
                     npm cache clean --force
-                    npm install
+                    npm ci
                     npm run build
                 '''
             }
